@@ -392,9 +392,6 @@
 +#define SHATTRATH          318
 +#define ISLE_DANAS         319
 +#define DIRE_MAUL_ARENA    320
-+#define VANOCNI_EVENT_T    321
-+#define VANOCNI_EVENT_M    322
-+#define VANOCNI_EVENT_B    323
 +
 +class server_teleporter : public GameObjectScript
 +{
