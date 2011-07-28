@@ -87,7 +87,7 @@ diff -r b4f28c6c0916 -r 0b1ef27c201b src/server/game/Spells/SpellEffects.cpp
 -            return;
 +    std::list< std::pair<uint32, uint8> > list;
 +    for (uint32 i = 0; i < MAX_RUNES; ++i)
-+        if (player->GetCurrentRune(i) == RuneType(m_spellInfo->EffectMiscValue[effIndex]))
++        if (player->GetCurrentRune(i) == RuneType(m_spellInfo->Effects[effIndex].MiscValue))
 +            list.push_back(std::make_pair<uint32, uint8>(player->GetRuneCooldown(i), i));
 +    list.sort();
  
@@ -107,6 +107,7 @@ diff -r b4f28c6c0916 -r 0b1ef27c201b src/server/game/Spells/SpellEffects.cpp
  }
  
  void Spell::EffectCreateTamedPet(SpellEffIndex effIndex)
+
 
 diff -r b4f28c6c0916 -r 0b1ef27c201b src/server/game/Spells/SpellMgr.cpp
 --- a/src/server/game/Spells/SpellMgr.cpp	Mon Sep 20 10:19:20 2010 +0200
