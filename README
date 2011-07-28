@@ -27,6 +27,18 @@ Dalaran Sewers (dalaran_sewers.patch)
 Reset CoolDown (resetcd.patch)
 	* Reset CoolDown before duel (1v1).
 
+Teleport + Guild Teleport + Guildmaster (tele_guild_tele_and_npc.patch)
+	* Teleport = Teleport to Stormwind City, Ironforge, Darnassus,
+	  Exodar, Silvermoon, Orgrimmar, Undercity, Thunderbluff,
+	  GurubashiArena, Dalaran, ShattrathCity, DK zone, BoreanTundra,
+	  Valiance Keep, Grom Gol Base Camp, Gadgetzan, BootyBay, 
+	  Ratchet, Isle of Quel Danas, Dire Maul Arena.
+	* Guild Teleport = Teleport to Icecrown Citadel, Trial of the
+	  Crusader, Ulduar, Naxxramas, Onyxia Lair, The Eye, Obsidian
+	  Sanctum.
+	* Guildmaster = Creature, who only ported to guildhouse!
+	* Need execute sql files!
+
 Ulduar Teleport (ulduar_teleport.patch)
 	* Funny script for Fun servers. It may not be killing all bosses,
 	  and you can port where you want in Ulduar.
