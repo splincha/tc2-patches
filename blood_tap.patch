@@ -54,7 +54,7 @@ diff -r b4f28c6c0916 -r 0b1ef27c201b src/server/game/Spells/SpellEffects.cpp
          // Snake Trap
          case 57879:
              originalCaster = m_originalCaster;
-@@ -6657,37 +6654,25 @@
+@@ -6652,37 +6656,25 @@
      if (m_caster->GetTypeId() != TYPEID_PLAYER)
          return;
  
@@ -73,7 +73,7 @@ diff -r b4f28c6c0916 -r 0b1ef27c201b src/server/game/Spells/SpellEffects.cpp
 -    if (count == 0) count = 1;
 -    for (uint32 j = 0; j < MAX_RUNES && count > 0; ++j)
 -    {
--        if (plr->GetRuneCooldown(j) && plr->GetCurrentRune(j) == RuneType(m_spellInfo->EffectMiscValue[effIndex]))
+-        if (plr->GetRuneCooldown(j) && plr->GetCurrentRune(j) == RuneType(m_spellInfo->Effects[effIndex].MiscValue))
 -        {
 -            plr->SetRuneCooldown(j, 0);
 -            --count;
@@ -106,7 +106,9 @@ diff -r b4f28c6c0916 -r 0b1ef27c201b src/server/game/Spells/SpellEffects.cpp
 +    player->AddRunePower(runesState); 
  }
  
- void Spell::EffectCreateTamedPet(SpellEffIndex effIndex)diff -r b4f28c6c0916 -r 0b1ef27c201b src/server/game/Spells/SpellMgr.cpp
+ void Spell::EffectCreateTamedPet(SpellEffIndex effIndex)
+
+diff -r b4f28c6c0916 -r 0b1ef27c201b src/server/game/Spells/SpellMgr.cpp
 --- a/src/server/game/Spells/SpellMgr.cpp	Mon Sep 20 10:19:20 2010 +0200
 +++ b/src/server/game/Spells/SpellMgr.cpp	Mon Sep 20 07:30:48 2010 -0300
 @@ -3883,6 +3883,10 @@
