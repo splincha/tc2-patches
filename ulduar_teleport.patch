@@ -1,0 +1,21 @@
+--- a/src/server/scripts/Northrend/Ulduar/ulduar/ulduar_teleporter.cpp	2011-07-20 04:59:50.000000000 +0000
++++ b/src/server/scripts/Northrend/Ulduar/ulduar/ulduar_teleporter.cpp	2011-07-20 08:08:03.000000000 +0000
+@@ -97,18 +97,11 @@
+             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Expedition Base Camp", GOSSIP_SENDER_MAIN, BASE_CAMP);
+             if (InstanceScript* instance = gameObject->GetInstanceScript())
+             {
+-                if (instance->GetData(DATA_COLOSSUS) == 2) //count of 2 collossus death
+                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Formation Grounds", GOSSIP_SENDER_MAIN, GROUNDS);
+-                if (instance->GetBossState(BOSS_LEVIATHAN) == DONE)
+                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Colossal Forge", GOSSIP_SENDER_MAIN, FORGE);
+-                if (instance->GetBossState(BOSS_XT002) == DONE)
+-                {
+                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Scrapyard", GOSSIP_SENDER_MAIN, SCRAPYARD);
+                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Antechamber of Ulduar", GOSSIP_SENDER_MAIN, ANTECHAMBER);
+-                }
+-                if (instance->GetBossState(BOSS_KOLOGARN) == DONE)
+                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Shattered Walkway", GOSSIP_SENDER_MAIN, WALKWAY);
+-                if (instance->GetBossState(BOSS_AURIAYA) == DONE)
+                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Conservatory of Life", GOSSIP_SENDER_MAIN, CONSERVATORY);
+             }
+ 

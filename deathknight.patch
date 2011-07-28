@@ -1,0 +1,13 @@
+--- a/src/server/game/Entities/Player/Player.cpp	2011-07-20 04:59:50.000000000 +0000
++++ b/src/server/game/Entities/Player/Player.cpp	2011-07-20 06:48:34.000000000 +0000
+@@ -2190,8 +2190,8 @@
+     }
+     else
+     {
+-        if (getClass() == CLASS_DEATH_KNIGHT && GetMapId() == 609 && !isGameMaster() && !HasSpell(50977))
+-            return false;
++/*        if (getClass() == CLASS_DEATH_KNIGHT && GetMapId() == 609 && !isGameMaster() && !HasSpell(50977))
++            return false; */
+ 
+         // far teleport to another map
+         Map* oldmap = IsInWorld() ? GetMap() : NULL;
