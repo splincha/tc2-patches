@@ -1,0 +1,37 @@
+Name: Mouse
+Email: Mouse@altron-wow.eu
+Site: http://altron-wow.eu
+From: Czech Republic
+
+
+Description:
+
+Anticheat (anticheat.patch)
+	* Passive anticheat that writes to the database by hackers. 
+	  When a player uses speedhack, wallhack, airjump, flyhack, 
+	  waterhack and other, online GM gets connected immediately
+	  report about hacker. 
+
+Blood Tap (blood_tap.patch)
+	* Fix for spell in-game "Blood Tap". 
+	  (http://www.wowhead.com/spell=45529)
+
+Deathknight (deathknight.patch)
+	* Deathknight may not have fulfilled all the quests,
+	  he wants to leave the DK zone.
+
+Dalaran Sewers (dalaran_sewers.patch)
+	* Arena in game "Dalaran Sewers"
+	* Need execute sql files!
+
+Reset CoolDown (resetcd.patch)
+	* Reset CoolDown before duel (1v1).
+
+Ulduar Teleport (ulduar_teleport.patch)
+	* Funny script for Fun servers. It may not be killing all bosses,
+	  and you can port where you want in Ulduar.
+
+WoW Armory (wowarmory_arena_chart.patch & wowarmory_patch.patch)
+	* Patch for armory on website from Shadez project.
+	* https://github.com/Shadez/wowarmory/
+	* Need execute sql files!
