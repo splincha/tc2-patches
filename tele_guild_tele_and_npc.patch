@@ -1,0 +1,641 @@
+--- a/src/server/scripts/Custom/guildmaster.cpp	1970-01-01 00:00:00.000000000 +0000
++++ b/src/server/scripts/Custom/guildmaster.cpp	2011-07-15 14:57:16.000000000 +0000
+@@ -0,0 +1,355 @@
++#include "ScriptPCH.h"
++#include <cstring>
++
++extern WorldDatabaseWorkerPool WorldDatabase;
++
++#define MSG_GOSSIP_TELE          "Teleport do GuildHousu"
++#define MSG_GOSSIP_BUY           "Buy GuildHouse (1000 gold)"
++#define MSG_GOSSIP_SELL          "Sell GuildHouse (500 gold)"
++#define MSG_GOSSIP_NEXTPAGE      "Next -->"
++#define MSG_INCOMBAT             "Nemuzes se teleportovat, kdyz jsi v combatu."
++#define MSG_NOGUILDHOUSE         "Tvoje Guilda nema zadny GuildHouse."
++#define MSG_NOFREEGH             "Unfortunately, all GuildHouses are in use."
++#define MSG_ALREADYHAVEGH        "Sorry, but you already own a GuildHouse (%s)."
++#define MSG_NOTENOUGHMONEY       "You do not have the %u gold required to purchase a GuildHouse."
++#define MSG_GHOCCUPIED           "This GuildHouse is unavailable for purchase as it is currently in use."
++#define MSG_CONGRATULATIONS      "Congratulations! You have successfully purchased a GuildHouse."
++#define MSG_SOLD                 "You have sold your GuildHouse, you may now buy a new house!"
++#define MSG_NOTINGUILD           "Nejsi v zadne guilde!"
++#define MSG_NO_TOKEN                 "You must have the Guildhouse Token to be able to view the buylist."
++
++#define CODE_SELL "SELL"
++#define MSG_CODEBOX_SELL "Type \"" CODE_SELL "\" into the field to confirm that you want to sell your GuildHouse."
++
++#define OFFSET_GH_ID_TO_ACTION 1500
++#define OFFSET_SHOWBUY_FROM 10000
++
++#define ACTION_TELE 1001
++#define ACTION_SHOW_BUYLIST 1002 //deprecated. Use (OFFSET_SHOWBUY_FROM + 0) instead
++#define ACTION_SELL_GUILDHOUSE 1003
++#define ACTION_SELL_GUILDHOUSE_OPT 1004
++#define ACTION_SELL_GUILDHOUSE_YES 1005
++#define ACTION_SELL_GUILDHOUSE_NO 1006
++
++#define ACTION_TELE 1001
++#define ACTION_SHOW_BUYLIST 1002 //deprecated. Use (OFFSET_SHOWBUY_FROM + 0) instead
++#define ACTION_SELL_GUILDHOUSE 1003
++
++#define ICON_GOSSIP_BALOON 0
++#define ICON_GOSSIP_WING 2
++#define ICON_GOSSIP_BOOK 3
++#define ICON_GOSSIP_WHEEL1 4
++#define ICON_GOSSIP_WHEEL2 5
++#define ICON_GOSSIP_GOLD 6
++#define ICON_GOSSIP_BALOONDOTS 7
++#define ICON_GOSSIP_TABARD 8
++#define ICON_GOSSIP_XSWORDS 9
++
++#define COST_GH_BUY 10000000 //1000 g.
++#define COST_GH_SELL 5000000 //500 g.
++
++#define GOSSIP_COUNT_MAX 10
++
++char str[200];
++
++bool isPlayerGuildLeader(Player *player)
++{
++ return (player->GetRank() == 0) && (player->GetGuildId() != 0);
++}
++
++bool getGuildHouseCoords(uint32 guildId, float &x, float &y, float &z, uint32 &map)
++{
++ if (guildId == 0)
++ {
++ //if player has no guild
++ return false;
++ }
++
++ QueryResult result;
++ result = WorldDatabase.PQuery("SELECT `x`, `y`, `z`, `map` FROM `guildhouses` WHERE `guildId` = %u", guildId);
++ if (result)
++ {
++ Field *fields = result->Fetch();
++ x = fields[0].GetFloat();
++ y = fields[1].GetFloat();
++ z = fields[2].GetFloat();
++ map = fields[3].GetUInt32();
++ return true;
++ }
++
++ return false;
++}
++
++void teleportPlayerToGuildHouse(Player *player, Creature *_creature)
++{
++ if (player->GetGuildId() == 0)
++ {
++ //if player has no guild
++ _creature->MonsterWhisper(MSG_NOTINGUILD, player->GetGUID());
++ sprintf(str,"I am sorry %u but you must be in a guild!", player->GetName());
++ return;
++ }
++
++ if (!player->getAttackers().empty())
++ {
++ //if player in combat
++ _creature->MonsterSay(MSG_INCOMBAT, LANG_UNIVERSAL, player->GetGUID());
++ return;
++ }
++
++ float x, y, z;
++ uint32 map;
++
++ if (getGuildHouseCoords(player->GetGuildId(), x, y, z, map))
++ {
++ //teleport player to the specified location
++ player->TeleportTo(map, x, y, z, 0.0f);
++ }
++ else
++ _creature->MonsterWhisper(MSG_NOGUILDHOUSE, player->GetGUID());
++}
++
++bool showBuyList(Player *player, Creature *_creature, uint32 showFromId = 0)
++{
++ //show not occupied guildhouses
++ 
++ if(player->HasItemCount(30, 1))
++ {
++
++ QueryResult result;
++ result = WorldDatabase.PQuery("SELECT `id`, `comment` FROM `guildhouses` WHERE `guildId` = 0 AND `id` > %u ORDER BY `id` ASC LIMIT %u",
++ showFromId, GOSSIP_COUNT_MAX);
++
++ if (result)
++ {
++ uint32 guildhouseId = 0;
++ std::string comment = "";
++ do
++ {
++ Field *fields = result->Fetch();
++ guildhouseId = fields[0].GetInt32();
++ comment = fields[1].GetString();
++
++ //send comment as a gossip item
++ //transmit guildhouseId in Action variable
++ player->ADD_GOSSIP_ITEM(ICON_GOSSIP_TABARD, comment, GOSSIP_SENDER_MAIN,
++ guildhouseId + OFFSET_GH_ID_TO_ACTION);
++ }
++ while (result->NextRow());
++
++ if (result->GetRowCount() == GOSSIP_COUNT_MAX)
++ {
++ //assume that we have additional page
++ //add link to next GOSSIP_COUNT_MAX items
++
++ }
++
++ player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
++
++ return true;
++ }
++ else
++ {
++ if (showFromId = 0)
++ {
++ //all guildhouses are occupied
++ _creature->MonsterWhisper(MSG_NOFREEGH, player->GetGUID());
++ player->CLOSE_GOSSIP_MENU();
++ }
++ else
++ {
++ //this condition occurs when COUNT(guildhouses) % GOSSIP_COUNT_MAX == 0
++ //just show GHs from beginning
++ showBuyList(player, _creature, 0);
++ }
++ }
++ } else {
++ _creature->MonsterSay(MSG_NO_TOKEN, LANG_UNIVERSAL, player->GetGUID());
++ sprintf(str,"You must have a GuildHouse Token to view the shop lists.");
++ player->CLOSE_GOSSIP_MENU();
++ }
++
++ return false;
++}
++
++bool isPlayerHasGuildhouse(Player *player, Creature *_creature, bool whisper = false)
++{
++ QueryResult result;
++ result = WorldDatabase.PQuery("SELECT `comment` FROM `guildhouses` WHERE `guildId` = %u",
++ player->GetGuildId());
++
++ if (result)
++ {
++
++ return true;
++ }
++
++ return false;
++}
++
++void buyGuildhouse(Player *player, Creature *_creature, uint32 guildhouseId)
++{
++ if (player->GetMoney() < COST_GH_BUY)
++ {
++ //show how much money player need to buy GH (in gold)
++ char msg[100];
++ sprintf(msg, MSG_NOTENOUGHMONEY, COST_GH_BUY / 10000);
++ _creature->MonsterWhisper(msg, player->GetGUID());
++ return;
++ }
++
++ if (isPlayerHasGuildhouse(player, _creature, true))
++ {
++ //player already have GH
++ return;
++ }
++
++ QueryResult result;
++
++ //check if somebody already occupied this GH
++ result = WorldDatabase.PQuery("SELECT `id` FROM `guildhouses` WHERE `id` = %u AND `guildId` <> 0", guildhouseId);
++
++ if (result)
++ {
++ _creature->MonsterWhisper(MSG_GHOCCUPIED, player->GetGUID());
++ return;
++ }
++
++ //update DB
++ result = WorldDatabase.PQuery("UPDATE `guildhouses` SET `guildId` = %u WHERE `id` = %u",
++ player->GetGuildId(), guildhouseId);
++
++ if (result)
++ player->ModifyMoney(-COST_GH_BUY);
++ player->DestroyItemCount(30, 1, true, false);
++ _creature->MonsterSay(MSG_CONGRATULATIONS, LANG_UNIVERSAL, player->GetGUID());
++}
++
++void sellGuildhouse(Player *player, Creature *_creature)
++{
++ QueryResult result;
++ result = WorldDatabase.PQuery("UPDATE `guildhouses` SET `guildId` = 0 WHERE `guildId` = %u", player->GetGuildId());
++
++ if (result)
++ player->ModifyMoney(COST_GH_SELL);
++ _creature->MonsterSay(MSG_SOLD, LANG_UNIVERSAL, player->GetGUID());
++ player->CLOSE_GOSSIP_MENU();
++}
++
++class guildmaster : public CreatureScript
++{
++ public:
++ guildmaster() : CreatureScript("guildmaster") { }
++
++ bool GossipSelectWithCode(Player *player, Creature *_creature, uint32 sender, uint32 action, const char* sCode)
++ {
++ if (sender == GOSSIP_SENDER_MAIN)
++ {
++ if (action == ACTION_SELL_GUILDHOUSE)
++ {
++ int i = -1;
++ try
++ {
++ //compare code
++
++ if (strlen(sCode) + 1 == sizeof CODE_SELL)
++ i = strcmp(CODE_SELL, sCode);
++ }
++
++ catch(char *str) {sLog->outErrorDb(str);
++ }
++
++ if (i == 0)
++ {
++ //right code
++ sellGuildhouse(player, _creature);
++ }
++
++ player->CLOSE_GOSSIP_MENU();
++ return true;
++ }
++ }
++ return false;
++}
++
++ bool OnGossipSelect(Player *player, Creature *_creature, uint32 sender, uint32 action)
++ {
++ player->PlayerTalkClass->ClearMenus();
++ if (sender != GOSSIP_SENDER_MAIN)
++ return false;
++
++ switch (action)
++ {
++ case ACTION_TELE:
++ //teleport player to GH
++ player->CLOSE_GOSSIP_MENU();
++ teleportPlayerToGuildHouse(player, _creature);
++ break;
++ case ACTION_SHOW_BUYLIST:
++ //show list of GHs which currently not occupied
++ showBuyList(player, _creature);
++ break;
++
++ case ACTION_SELL_GUILDHOUSE_OPT:
++ player->CLOSE_GOSSIP_MENU();
++ player->ADD_GOSSIP_ITEM(0, "Yes, Sell my guild", GOSSIP_SENDER_MAIN, ACTION_SELL_GUILDHOUSE_YES);
++ player->ADD_GOSSIP_ITEM(0, "No, Close this", GOSSIP_SENDER_MAIN, ACTION_SELL_GUILDHOUSE_NO);
++ player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
++ break;
++ 
++ case ACTION_SELL_GUILDHOUSE_YES:
++ sellGuildhouse(player, _creature);
++ player->CLOSE_GOSSIP_MENU();
++ break;
++ 
++ case ACTION_SELL_GUILDHOUSE_NO:
++ player->CLOSE_GOSSIP_MENU();
++ break;
++
++ default:
++ if (action > OFFSET_SHOWBUY_FROM)
++ {
++ showBuyList(player, _creature, action - OFFSET_SHOWBUY_FROM);
++ }
++ else if (action > OFFSET_GH_ID_TO_ACTION)
++ {
++ //player clicked on buy list
++ player->CLOSE_GOSSIP_MENU();
++
++ //get guildhouseId from action
++ //guildhouseId = action - OFFSET_GH_ID_TO_ACTION
++ buyGuildhouse(player, _creature, action - OFFSET_GH_ID_TO_ACTION);
++ }
++ break;
++ }
++
++ return true;
++ }
++
++
++ bool OnGossipHello(Player *player, Creature *_creature)
++ {
++ player->ADD_GOSSIP_ITEM(ICON_GOSSIP_BALOON, MSG_GOSSIP_TELE,
++ GOSSIP_SENDER_MAIN, ACTION_TELE);
++
++ if (isPlayerGuildLeader(player))
++ {
++ if (isPlayerHasGuildhouse(player, _creature))
++ {
++ }
++ else
++ {
++ //show additional menu for guild leader
++ }
++ }
++
++ player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
++ return true;
++ }
++
++
++};
++void AddSC_guildmaster()
++{
++ new guildmaster();
++}
+\ No newline at end of file
+--- a/src/server/scripts/Custom/teleport.cpp	1970-01-01 00:00:00.000000000 +0000
++++ b/src/server/scripts/Custom/teleport.cpp	2011-07-03 21:11:43.000000000 +0000
+@@ -0,0 +1,156 @@
++/* ========================================================================== */
++/*   Server Teleporter (Make for Altron)  [www.altron-wow.eu]                 */
++/*   teleport.cpp                                                             */
++/*   (c) 2010 Author                                                          */
++/*   Mouse                                                                    */
++/*   Description                                                              */
++/*   World of Warcraft Teleporter                                             */
++/* ========================================================================== */
++
++#include "ScriptPCH.h" 
++
++#define STORMWIND_CITY     300
++#define IRONFORGE          301
++#define DARNASSUS          302
++#define EXODAR             303
++#define SILVERMOON         304
++#define ORGRIMMAR          305
++#define UNDERCITY          306
++#define THUNDER_BLUFF      307
++#define GURUBASHI_ARENA    308
++#define DALARAN            309
++#define SHATTRATH_CITY     310
++#define DK_ZONE            311
++#define BOREAN_TUNDRA      312
++#define VALIANCE_KEEP      313
++#define GROM_GOL_BASE_CAMP 314
++#define GADGETZAN          315
++#define BOOTY_BAY          316
++#define RATCHET            317
++#define SHATTRATH          318
++#define ISLE_DANAS         319
++#define DIRE_MAUL_ARENA    320
++#define VANOCNI_EVENT_T    321
++#define VANOCNI_EVENT_M    322
++#define VANOCNI_EVENT_B    323
++
++class server_teleporter : public GameObjectScript
++{
++public:
++    server_teleporter() : GameObjectScript("server_teleporter") { }
++
++    bool OnGossipSelect(Player *pPlayer, GameObject * /*pGO*/, uint32 sender, uint32 action)
++    {
++        if (sender != GOSSIP_SENDER_MAIN) return true;
++        if (!pPlayer->getAttackers().empty()) return true;
++
++    switch(action)
++    {
++    case STORMWIND_CITY:
++        pPlayer->TeleportTo(0, -8914.0488, 552.573425, 93.8967, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case IRONFORGE:
++        pPlayer->TeleportTo(0, -4982.0634, -881.4423, 501.6585, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case DARNASSUS:
++        pPlayer->TeleportTo(1, 9951.9570, 2280.4577, 1341.3946, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case EXODAR:
++        pPlayer->TeleportTo(530, -3990.6325, -11853.3886, 0.3220, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case SILVERMOON:
++        pPlayer->TeleportTo(530, 9409.6591, -7278.5229, 14.1895, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case ORGRIMMAR:
++        pPlayer->TeleportTo(1, 1475.7580, -4418.1669, 25.4624, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case UNDERCITY:
++        pPlayer->TeleportTo(0, 1560.9245, 240.4727, -43.1023, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;  
++    case THUNDER_BLUFF:
++        pPlayer->TeleportTo(1, -1318.1850, 181.1651, 68.5518, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case GURUBASHI_ARENA:
++        pPlayer->TeleportTo(0, -13233.4042, 218.2634, 31.8044, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case DALARAN:
++        pPlayer->TeleportTo(571, 5807.7885, 588.3062, 660.9388, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case DK_ZONE:
++        pPlayer->TeleportTo(609, 2352.4519, -5665.9877, 426.0270, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case BOREAN_TUNDRA:
++        pPlayer->TeleportTo(571, 2836.1191, 6184.3701, 121.9121, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case VALIANCE_KEEP:
++        pPlayer->TeleportTo(571, 2230.8869, 5131.1660, 5.3442, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break; 
++    case GROM_GOL_BASE_CAMP:
++        pPlayer->TeleportTo(0, -12379, 228.6648, 2.9023, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case GADGETZAN:
++        pPlayer->TeleportTo(1, -7180.1752, -3816.5249, 8.3869, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case BOOTY_BAY:
++        pPlayer->TeleportTo(0, -14297.2568, 436.3192, 31.7027, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case RATCHET:
++        pPlayer->TeleportTo(1, -958.5120, -3757.9025, 5.1964, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;    
++    case SHATTRATH:
++        pPlayer->TeleportTo(530, -1866.9254, 5420.2148, -10.4638, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;     
++    case ISLE_DANAS:
++        pPlayer->TeleportTo(530, 12947.4003, -6893.3100, 5.6838, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;    
++    case DIRE_MAUL_ARENA:
++        pPlayer->TeleportTo(1, -3761.5634, 1125.8996, 131.9676, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;   
++        }
++
++        return true;
++    }
++
++
++    bool OnGossipHello(Player *pPlayer, GameObject *pGO)
++    {
++
++    if(pPlayer->GetTeam() == ALLIANCE)
++    {
++        pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Stormwind City", GOSSIP_SENDER_MAIN, STORMWIND_CITY);
++        pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Ironforge", GOSSIP_SENDER_MAIN, IRONFORGE);
++        pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Darnassus", GOSSIP_SENDER_MAIN, DARNASSUS);
++        pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Exodar", GOSSIP_SENDER_MAIN, EXODAR);
++    }
++    
++    if(pPlayer->GetTeam() == HORDE)
++    {
++        pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Silvermoon", GOSSIP_SENDER_MAIN, SILVERMOON);
++        pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Orgrimmar", GOSSIP_SENDER_MAIN, ORGRIMMAR);
++        pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Undercity", GOSSIP_SENDER_MAIN, UNDERCITY);
++        pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Thunder Bluff", GOSSIP_SENDER_MAIN, THUNDER_BLUFF);
++    }
++    
++    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Gurubashi Arena", GOSSIP_SENDER_MAIN, GURUBASHI_ARENA);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Dalaran", GOSSIP_SENDER_MAIN, DALARAN);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the DK Zone", GOSSIP_SENDER_MAIN, DK_ZONE);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Borean Tundra", GOSSIP_SENDER_MAIN, BOREAN_TUNDRA);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Valiance Keep", GOSSIP_SENDER_MAIN, VALIANCE_KEEP);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Grol'gom Base Camp", GOSSIP_SENDER_MAIN, GROM_GOL_BASE_CAMP);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Gadgetzan", GOSSIP_SENDER_MAIN, GADGETZAN);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Booty Bay", GOSSIP_SENDER_MAIN, BOOTY_BAY);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Ratchet", GOSSIP_SENDER_MAIN, RATCHET);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Shattrath City", GOSSIP_SENDER_MAIN, SHATTRATH);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Isle of Quel'Danas", GOSSIP_SENDER_MAIN, ISLE_DANAS);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Dire Maul Arena", GOSSIP_SENDER_MAIN, DIRE_MAUL_ARENA);
++    pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pGO->GetGUID());
++    return true;
++
++    }
++
++};
++
++void AddSC_server_teleporter()
++{
++    new server_teleporter();
++}                                                                
+\ No newline at end of file
+
+--- a/src/server/scripts/Custom/teleport_guild.cpp	1970-01-01 00:00:00.000000000 +0000
++++ b/src/server/scripts/Custom/teleport_guild.cpp	2011-07-15 17:56:01.000000000 +0000
+@@ -0,0 +1,79 @@
++/* ========================================================================== */
++/*   Guild Teleporter (Make for Altron)  [www.altron-wow.eu]                 */
++/*   teleport.cpp                                                             */
++/*   (c) 2010 Author                                                          */
++/*   Mouse                                                                    */
++/*   Description                                                              */
++/*   World of Warcraft Teleporter                                             */
++/* ========================================================================== */
++
++#include "ScriptPCH.h" 
++
++#define ICECROWN_CITADEL     500
++#define TRIAL     		 501
++#define ULDUAR     		 502
++#define NAXX     		 503
++#define ONYX     		 504
++#define THEEYE     		 505
++#define OBS     		 506
++
++class guild_teleporter : public GameObjectScript
++{
++public:
++    guild_teleporter() : GameObjectScript("guild_teleporter") { }
++
++    bool OnGossipSelect(Player *pPlayer, GameObject * /*pGO*/, uint32 sender, uint32 action)
++    {
++        if (sender != GOSSIP_SENDER_MAIN) return true;
++        if (!pPlayer->getAttackers().empty()) return true;
++
++    switch(action)
++    {
++    case ICECROWN_CITADEL:
++        pPlayer->TeleportTo(571, 5873.819824, 2110.979980, 636.010986, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;  
++    case TRIAL:
++        pPlayer->TeleportTo(571, 8515.889648, 629.25, 547.395996, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break; 
++    case ULDUAR:
++        pPlayer->TeleportTo(571, 9049.370117, -1282.349976, 1060.189941, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break; 
++    case NAXX:
++        pPlayer->TeleportTo(571, 3668.719971, -1262.459961, 243.621994, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case ONYX:
++        pPlayer->TeleportTo(1, -4708.270020, -3727.639893, 54.558811, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case THEEYE:
++        pPlayer->TeleportTo(571, 3781.810059, 6953.649902, 104.819992, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case OBS:
++        pPlayer->TeleportTo(571, 33573.218750, 275.833496, -114.036209, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;  
++        }
++
++        return true;
++    }
++
++
++    bool OnGossipHello(Player *pPlayer, GameObject *pGO)
++    {    
++    pPlayer->ADD_GOSSIP_ITEM(0, "Icecrown Citadel", GOSSIP_SENDER_MAIN, ICECROWN_CITADEL);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Trial of the Crusader", GOSSIP_SENDER_MAIN, TRIAL);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Ulduar", GOSSIP_SENDER_MAIN, ULDUAR);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Naxxramas", GOSSIP_SENDER_MAIN, NAXX);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Onyxia's Lair", GOSSIP_SENDER_MAIN, ONYX);
++    pPlayer->ADD_GOSSIP_ITEM(0, "The Eye of Eternity", GOSSIP_SENDER_MAIN, THEEYE);
++    pPlayer->ADD_GOSSIP_ITEM(0, "The Obsidian Sanctum", GOSSIP_SENDER_MAIN, OBS);
++
++    pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pGO->GetGUID());
++    return true;
++
++    }
++
++};
++
++void AddSC_guild_teleporter()
++{
++    new guild_teleporter();
++}                                                                
+\ No newline at end of file
+
+--- a/src/server/scripts/Custom/CMakeLists.txt	2011-07-20 04:59:50.000000000 +0000
++++ b/src/server/scripts/Custom/CMakeLists.txt	2011-07-20 06:05:52.000000000 +0000
+@@ -10,6 +10,9 @@
+ 
+ set(scripts_STAT_SRCS
+   ${scripts_STAT_SRCS}
++  Custom/guildmaster.cpp
++  Custom/teleport.cpp
++  Custom/teleport_guild.cpp
+ )
+ 
+ message("  -> Prepared: Custom")
+
+--- a/src/server/game/Scripting/ScriptLoader.cpp	2011-07-20 04:59:50.000000000 +0000
++++ b/src/server/game/Scripting/ScriptLoader.cpp	2011-07-20 06:44:29.000000000 +0000
+@@ -17,6 +17,11 @@
+ 
+ #include "ScriptLoader.h"
+ 
++//Custom scripts
++void AddSC_guild_teleporter();
++void AddSC_server_teleporter();
++void AddSC_guildmaster();
++
+ //examples
+ void AddSC_example_creature();
+ void AddSC_example_escort();
+@@ -677,6 +682,10 @@
+     AddSC_npc_taxi();
+     AddSC_achievement_scripts();
+     AddSC_chat_log();
++    //Custom scripts
++    AddSC_guild_teleporter();
++    AddSC_server_teleporter();
++    AddSC_guildmaster();
+ #endif
+ }
