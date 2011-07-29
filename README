@@ -2,6 +2,7 @@ Name: Mouse
 Email: Mouse@altron-wow.eu
 Site: http://altron-wow.eu
 From: Czech Republic
+Test: All patch are tested on Debian
 
 
 Description:
@@ -47,3 +48,6 @@ WoW Armory (wowarmory_arena_chart.patch & wowarmory_patch.patch)
 	* Patch for armory on website from Shadez project.
 	* https://github.com/Shadez/wowarmory/
 	* Need execute sql files!
+
+
+*** Sorry for my bad english :/
