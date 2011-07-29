@@ -361,7 +361,7 @@
 +++ b/src/server/scripts/Custom/teleport.cpp	2011-07-03 21:11:43.000000000 +0000
 @@ -0,0 +1,156 @@
 +/* ========================================================================== */
-+/*   Server Teleporter (Make for Altron)  [www.altron-wow.eu]                 */
++/*   Server Teleporter							         */
 +/*   teleport.cpp                                                             */
 +/*   (c) 2010 Author                                                          */
 +/*   Mouse                                                                    */
@@ -519,8 +519,8 @@
 +++ b/src/server/scripts/Custom/teleport_guild.cpp	2011-07-15 17:56:01.000000000 +0000
 @@ -0,0 +1,79 @@
 +/* ========================================================================== */
-+/*   Guild Teleporter (Make for Altron)  [www.altron-wow.eu]                 */
-+/*   teleport.cpp                                                             */
++/*   Guild Teleporter 						                */
++/*   teleport_guild.cpp                                                       */
 +/*   (c) 2010 Author                                                          */
 +/*   Mouse                                                                    */
 +/*   Description                                                              */
@@ -529,7 +529,7 @@
 +
 +#include "ScriptPCH.h" 
 +
-+#define ICECROWN_CITADEL     500
++#define ICECROWN_CITADEL    500
 +#define TRIAL     		 501
 +#define ULDUAR     		 502
 +#define NAXX     		 503
