@@ -356,7 +356,7 @@
 +{
 + new guildmaster();
 +}
-\ No newline at end of file
+
 --- a/src/server/scripts/Custom/teleport.cpp	1970-01-01 00:00:00.000000000 +0000
 +++ b/src/server/scripts/Custom/teleport.cpp	2011-07-03 21:11:43.000000000 +0000
 @@ -0,0 +1,156 @@
@@ -513,7 +513,6 @@
 +{
 +    new server_teleporter();
 +}                                                                
-\ No newline at end of file
 
 --- a/src/server/scripts/Custom/teleport_guild.cpp	1970-01-01 00:00:00.000000000 +0000
 +++ b/src/server/scripts/Custom/teleport_guild.cpp	2011-07-15 17:56:01.000000000 +0000
@@ -597,7 +596,6 @@
 +{
 +    new guild_teleporter();
 +}                                                                
-\ No newline at end of file
 
 --- a/src/server/scripts/Custom/CMakeLists.txt	2011-07-20 04:59:50.000000000 +0000
 +++ b/src/server/scripts/Custom/CMakeLists.txt	2011-07-20 06:05:52.000000000 +0000
