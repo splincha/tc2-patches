@@ -104,3 +104,59 @@ index 0071a38..057dd35 100755
      protected:
          bool isWaterFallActive() { return m_waterfallActive; };
          void setWaterFallActive(bool active) { m_waterfallActive = active; };
+--- a/src/server/game/Battlegrounds/Battleground.h
++++ b/src/server/game/Battlegrounds/Battleground.h
+@@ -455,10 +455,11 @@ class Battleground
+ 
+         /* Map pointers */
+         void SetBgMap(BattlegroundMap* map) { m_Map = map; }
+-        BattlegroundMap* GetBgMap()
++        BattlegroundMap* GetBgMap(bool WithAssert = true)
+         {
+-            ASSERT(m_Map);
+-            return m_Map;
++            if(WithAssert)
++                ASSERT(m_Map);
++                return m_Map;
+         }
+ 
+         void SetTeamStartLoc(uint32 TeamID, float X, float Y, float Z, float O);
+
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundDS.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundDS.cpp
+@@ -59,20 +59,21 @@ void BattlegroundDS::Update(uint32 diff)
+ 
+     if (getWaterFallTimer() < diff)
+     {
+-        if (isWaterFallActive())
+-        {
+-            setWaterFallTimer(urand(BG_DS_WATERFALL_TIMER_MIN, BG_DS_WATERFALL_TIMER_MAX));
+-            for (uint32 i = BG_DS_OBJECT_WATER_1; i <= BG_DS_OBJECT_WATER_2; ++i)
+-                SpawnBGObject(i, getWaterFallTimer());
+-            setWaterFallActive(false);
+-        }
+-        else
+-        {
+-            setWaterFallTimer(BG_DS_WATERFALL_DURATION);
+-            for (uint32 i = BG_DS_OBJECT_WATER_1; i <= BG_DS_OBJECT_WATER_2; ++i)
+-                SpawnBGObject(i, RESPAWN_IMMEDIATELY);
+-            setWaterFallActive(true);
+-        }
++        if (GetBgMap(false))
++            if (isWaterFallActive())
++            {
++                setWaterFallTimer(urand(BG_DS_WATERFALL_TIMER_MIN, BG_DS_WATERFALL_TIMER_MAX));
++                for (uint32 i = BG_DS_OBJECT_WATER_1; i <= BG_DS_OBJECT_WATER_2; ++i)
++                    SpawnBGObject(i, getWaterFallTimer());
++                setWaterFallActive(false);
++            }
++            else
++            {
++                setWaterFallTimer(BG_DS_WATERFALL_DURATION);
++                for (uint32 i = BG_DS_OBJECT_WATER_1; i <= BG_DS_OBJECT_WATER_2; ++i)
++                    SpawnBGObject(i, RESPAWN_IMMEDIATELY);
++                setWaterFallActive(true);
++            }
+     }
+     else
+         setWaterFallTimer(getWaterFallTimer() - diff);
