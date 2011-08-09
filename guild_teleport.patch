@@ -1,0 +1,82 @@
+--- a/src/server/scripts/Custom/teleport_guild.cpp	1970-01-01 00:00:00.000000000 +0000
++++ b/src/server/scripts/Custom/teleport_guild.cpp	2011-07-15 17:56:01.000000000 +0000
+@@ -0,0 +1,79 @@
++/* ========================================================================== */
++/*   Guild Teleporter 						                */
++/*   teleport_guild.cpp                                                       */
++/*   (c) 2010 Author                                                          */
++/*   Mouse                                                                    */
++/*   Description                                                              */
++/*   World of Warcraft Teleporter                                             */
++/* ========================================================================== */
++
++#include "ScriptPCH.h" 
++
++#define ICECROWN_CITADEL    500
++#define TRIAL     		 501
++#define ULDUAR     		 502
++#define NAXX     		 503
++#define ONYX     		 504
++#define THEEYE     		 505
++#define OBS     		 506
++
++class guild_teleporter : public GameObjectScript
++{
++public:
++    guild_teleporter() : GameObjectScript("guild_teleporter") { }
++
++    bool OnGossipSelect(Player *pPlayer, GameObject * /*pGO*/, uint32 sender, uint32 action)
++    {
++        if (sender != GOSSIP_SENDER_MAIN) return true;
++        if (!pPlayer->getAttackers().empty()) return true;
++
++    switch(action)
++    {
++    case ICECROWN_CITADEL:
++        pPlayer->TeleportTo(571, 5873.819824, 2110.979980, 636.010986, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;  
++    case TRIAL:
++        pPlayer->TeleportTo(571, 8515.889648, 629.25, 547.395996, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break; 
++    case ULDUAR:
++        pPlayer->TeleportTo(571, 9049.370117, -1282.349976, 1060.189941, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break; 
++    case NAXX:
++        pPlayer->TeleportTo(571, 3668.719971, -1262.459961, 243.621994, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case ONYX:
++        pPlayer->TeleportTo(1, -4708.270020, -3727.639893, 54.558811, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case THEEYE:
++        pPlayer->TeleportTo(571, 3781.810059, 6953.649902, 104.819992, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;
++    case OBS:
++        pPlayer->TeleportTo(571, 33573.218750, 275.833496, -114.036209, 0);
++        pPlayer->CLOSE_GOSSIP_MENU(); break;  
++        }
++
++        return true;
++    }
++
++
++    bool OnGossipHello(Player *pPlayer, GameObject *pGO)
++    {    
++    pPlayer->ADD_GOSSIP_ITEM(0, "Icecrown Citadel", GOSSIP_SENDER_MAIN, ICECROWN_CITADEL);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Trial of the Crusader", GOSSIP_SENDER_MAIN, TRIAL);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Ulduar", GOSSIP_SENDER_MAIN, ULDUAR);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Naxxramas", GOSSIP_SENDER_MAIN, NAXX);
++    pPlayer->ADD_GOSSIP_ITEM(0, "Onyxia's Lair", GOSSIP_SENDER_MAIN, ONYX);
++    pPlayer->ADD_GOSSIP_ITEM(0, "The Eye of Eternity", GOSSIP_SENDER_MAIN, THEEYE);
++    pPlayer->ADD_GOSSIP_ITEM(0, "The Obsidian Sanctum", GOSSIP_SENDER_MAIN, OBS);
++
++    pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pGO->GetGUID());
++    return true;
++
++    }
++
++};
++
++void AddSC_guild_teleporter()
++{
++    new guild_teleporter();
++}
