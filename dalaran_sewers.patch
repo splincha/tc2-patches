@@ -94,16 +94,17 @@ index 0071a38..057dd35 100755
  };
  
  class BattlegroundDSScore : public BattlegroundScore
-@@ -81,6 +81,9 @@ class BattlegroundDS : public Battleground
+@@ -78,7 +78,9 @@
      private:
          uint32 m_waterTimer;
          bool m_waterfallActive;
-+        bool m_knockbackCheck;
-+        uint32 m_knockback;
-+        void KnockBackPlayer(Unit *pPlayer, float angle, float horizontalSpeed, float verticalSpeed);
+-
++	 bool m_knockbackCheck;
++	 uint32 m_knockback;
++	 void KnockBackPlayer(Unit *pPlayer, float angle, float horizontalSpeed, float verticalSpeed);
+         virtual void PostUpdateImpl(uint32 diff);
      protected:
          bool isWaterFallActive() { return m_waterfallActive; };
-         void setWaterFallActive(bool active) { m_waterfallActive = active; };
 --- a/src/server/game/Battlegrounds/Battleground.h
 +++ b/src/server/game/Battlegrounds/Battleground.h
 @@ -455,10 +455,11 @@ class Battleground
