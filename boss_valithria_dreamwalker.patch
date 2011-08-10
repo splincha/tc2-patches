@@ -1,0 +1,32 @@
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp	2011-07-28 08:22:41.000000000 +0000
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp	2011-08-09 21:23:31.000000000 +0000
+@@ -398,7 +398,15 @@
+                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                     me->DespawnOrUnsummon(4000);
+                     if (Creature* lichKing = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_VALITHRIA_LICH_KING)))
+-                        lichKing->CastSpell(lichKing, SPELL_SPAWN_CHEST, false);
++//                        lichKing->CastSpell(lichKing, SPELL_SPAWN_CHEST, false);
++                        if (GetDifficulty() == RAID_DIFFICULTY_10MAN_NORMAL)
++                            me->SummonGameObject(GO_DREAMWALKER_CACHE_10N, 4203.91f, 2456.83f, 365.655f, 1.54f, 0, 0, 0, 0 ,8640000000);
++                        else if (GetDifficulty() == RAID_DIFFICULTY_10MAN_HEROIC)
++                            me->SummonGameObject(GO_DREAMWALKER_CACHE_10H, 4203.91f, 2456.83f, 365.655f, 1.54f, 0, 0, 0, 0 ,8640000000);
++                        else if (GetDifficulty() == RAID_DIFFICULTY_25MAN_NORMAL)
++                            me->SummonGameObject(GO_DREAMWALKER_CACHE_25N, 4203.91f, 2456.83f, 365.655f, 1.54f, 0, 0, 0, 0 ,8640000000);
++                        else
++                            me->SummonGameObject(GO_DREAMWALKER_CACHE_25H, 4203.91f, 2456.83f, 365.655f, 1.54f, 0, 0, 0, 0 ,8640000000);
+ 
+                     if (Creature* trigger = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_VALITHRIA_TRIGGER)))
+                         me->Kill(trigger);
+--- a/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h	2011-07-28 08:22:41.000000000 +0000
++++ b/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h	2011-08-09 21:25:41.000000000 +0000
+@@ -302,6 +302,10 @@
+     GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_02   = 201381,
+     GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_03   = 201382,
+     GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_04   = 201383,
++    GO_DREAMWALKER_CACHE_10N = 201959,
++    GO_DREAMWALKER_CACHE_25N = 202339,
++    GO_DREAMWALKER_CACHE_10H = 202338,
++    GO_DREAMWALKER_CACHE_25H = 202340,
+ 
+     // Sindragosa
+     GO_SINDRAGOSA_ENTRANCE_DOOR             = 201373,
