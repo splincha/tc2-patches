@@ -1,0 +1,12 @@
+--- a/src/server/game/Spells/SpellMgr.cpp	2011-08-09 14:51:44.000000000 +0000
++++ b/src/server/game/Spells/SpellMgr.cpp	2011-08-11 12:21:37.000000000 +0000
+@@ -3084,6 +3084,9 @@
+         case 30421: // Nether Portal - Perseverence
+             spellInfo->EffectBasePoints[2] += 30000;
+             break;
++        case 61607: // Mark of Blood
++            spellInfo->AttributesEx |= SPELL_ATTR1_NO_THREAT;
++            break;
+         case 16834: // Natural shapeshifter
+         case 16835:
+             spellInfo->DurationIndex = 21;
