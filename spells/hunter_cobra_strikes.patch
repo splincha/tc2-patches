@@ -1,0 +1,27 @@
+--- a/src/server/game/Spells/Spell.cpp	2011-08-09 13:21:38.000000000 +0000
++++ b/src/server/game/Spells/Spell.cpp	2011-08-11 12:40:30.000000000 +0000
+@@ -1312,6 +1312,11 @@
+             AuraEffect * aurEff = m_spellAura->GetEffect(1);
+             aurEff->SetAmount(CalculatePctU(aurEff->GetAmount(), damageInfo.damage));
+         }
++        // Cobra Strikes (can't find any other way that may work)
++        if (m_spellInfo->SpellFamilyName == SPELLFAMILY_HUNTER && m_spellInfo->SpellFamilyFlags[1] & 0x10000000)
++            if (Unit * owner = caster->GetOwner())
++                if (Aura* pAura = owner->GetAura(53257))
++                    pAura->DropCharge();
+     }
+     // Passive spell hits/misses or active spells only misses (only triggers)
+     else
+--- a/src/server/game/Spells/SpellMgr.cpp	2011-08-09 14:51:44.000000000 +0000
++++ b/src/server/game/Spells/SpellMgr.cpp	2011-08-11 12:43:06.000000000 +0000
+@@ -3035,6 +3035,10 @@
+         case 44401: // Missile Barrage
+             spellInfo->procCharges = 1;
+             break;
++        case 53257:    // Cobra Strikes
++            spellInfo->procCharges = 2;
++            spellInfo->StackAmount = 0;
++            break;
+         case 44544: // Fingers of Frost
+             spellInfo->EffectSpellClassMask[0] = flag96(685904631, 1151048, 0);
+             break;
