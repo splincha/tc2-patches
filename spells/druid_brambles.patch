@@ -1,0 +1,31 @@
+--- a/src/server/game/Entities/Unit/Unit.cpp	2011-08-09 14:57:58.000000000 +0000
++++ b/src/server/game/Entities/Unit/Unit.cpp	2011-08-11 12:01:51.000000000 +0000
+@@ -8707,7 +8707,13 @@
+                 return false;
+             break;
+         }
+-
++        // Brambles
++        case 50419:
++        {
++            if (!roll_chance_i(triggerAmount))
++                return false;
++            break;
++        }
+         // Cheat Death
+         case 28845:
+         {
+--- a/src/server/game/Spells/SpellEffects.cpp	2011-08-09 14:51:44.000000000 +0000
++++ b/src/server/game/Spells/SpellEffects.cpp	2011-08-11 12:08:06.000000000 +0000
+@@ -6827,6 +6827,12 @@
+             else
+                 summon->SetDisplayId(1126);
+         }
++        else if (summon->GetEntry() == 1964) // Force of Nature
++            if (AuraEffect * aurEff = m_caster->GetAuraEffectOfRankedSpell(16836, 2))
++            {
++                int32 value = aurEff->GetAmount();
++                summon->CastCustomSpell(summon, 50419, &value, &value, 0, true);
++            }
+ 
+         summon->AI()->EnterEvadeMode();
