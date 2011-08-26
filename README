@@ -13,9 +13,8 @@ Anticheat (anticheat.patch)
 	  waterhack and other, online GM gets connected immediately
 	  report about hacker. 
 
-Blood Tap (blood_tap.patch)
-	* Fix for spell in-game "Blood Tap". 
-	  (http://www.wowhead.com/spell=45529)
+Spells (FILE)
+	* Fix for spella in-game. 
 
 Deathknight (deathknight.patch)
 	* Deathknight may not have fulfilled all the quests,
