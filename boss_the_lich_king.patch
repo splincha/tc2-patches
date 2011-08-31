@@ -3991,10 +3991,12 @@ index 048def7..a8466f4 100755
                      default:
                          break;
                  }
-@@ -543,6 +602,33 @@ class instance_icecrown_citadel : public InstanceMapScript
+@@ -548,8 +607,33 @@
                          return SpinestalkerGUID;
                      case DATA_RIMEFANG:
                          return RimefangGUID;
+-                    case DATA_THE_LICH_KING:
+-                        return TheLichKingGUID;
 +                    case GUID_LICH_KING:                        
 +                    {
 +                        if (!LichKingGUID || !instance->GetCreature(LichKingGUID))
