@@ -3846,12 +3846,11 @@ index 9453610..a6c5d71 100755
  };
  
  enum CreaturesIds
-@@ -239,6 +282,27 @@ enum CreaturesIds
-     NPC_ICY_BLAST                               = 38223,
-     NPC_FROST_BOMB                              = 37186,
+@@ -245,7 +288,25 @@
      NPC_ICE_TOMB                                = 36980,
-+
-+    //Lich King
+ 
+     // The Lich King
+-    NPC_THE_LICH_KING                           = 36597,
 +    NPC_LICH_KING                               = 36597,
 +    NPC_TIRION_ICC                              = 38995,
 +    NPC_PLATFORM_DESTRUCTIBLE_EDGE_STALKER      = 22515,
@@ -3870,7 +3869,7 @@ index 9453610..a6c5d71 100755
 +    NPC_VILE_SPIRIT                             = 37799,
 +    NPC_DEATHBOUND_WARD                         = 37007,
 +    NPC_SEVERED_ESSENCE                         = 38410,
-+    NPC_VALKYR_HERALD                           = 37098
++    NPC_VALKYR_HERALD                           = 37098,
  };
  
  enum GameObjectsIds
