@@ -4055,10 +4055,11 @@ index 048def7..a8466f4 100755
                      case DATA_BLOOD_QUICKENING_STATE:
                      {
                          // skip if nothing changes
-@@ -1101,6 +1208,19 @@ class instance_icecrown_citadel : public InstanceMapScript
+@@ -1119,7 +1224,19 @@
              uint64 SindragosaGUID;
              uint64 SpinestalkerGUID;
              uint64 RimefangGUID;
+-            uint64 TheLichKingGUID;
 +            uint64 uilavaman;
 +            uint64 uihangingman;
 +            uint64 LichKingGUID;
