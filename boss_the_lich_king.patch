@@ -248,16 +248,16 @@ index 6668c9f..a962cbc 100755
                      break;
 diff --git a/src/server/scripts/Northrend/CMakeLists.txt b/src/server/scripts/Northrend/CMakeLists.txt
 index 2798e14..1ce8f3e 100644
---- a/src/server/scripts/Northrend/CMakeLists.txt
-+++ b/src/server/scripts/Northrend/CMakeLists.txt
-@@ -170,6 +170,7 @@ set(scripts_STAT_SRCS
+--- a/src/server/scripts/Northrend/CMakeLists.txt	2011-08-31 06:05:29.000000000 +0000
++++ b/src/server/scripts/Northrend/CMakeLists.txt	2011-08-31 06:23:23.000000000 +0000
+@@ -173,6 +173,7 @@
    Northrend/IcecrownCitadel/boss_blood_queen_lana_thel.cpp
    Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
    Northrend/IcecrownCitadel/boss_sindragosa.cpp
 +  Northrend/IcecrownCitadel/boss_the_lich_king.cpp
-   Northrend/RubySanctum/boss_baltharus.cpp
-   Northrend/RubySanctum/boss_halion.cpp
-   Northrend/RubySanctum/boss_ragefire.cpp
+   Northrend/zuldrak.cpp
+   Northrend/icecrown.cpp
+   Northrend/Gundrak/boss_slad_ran.cpp
 diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
 new file mode 100644
 index 0000000..8f806ba
