@@ -171,29 +171,6 @@ diff --git a/src/server/game/Spells/SpellEffects.cpp b/src/server/game/Spells/Sp
 index 6668c9f..a962cbc 100755
 --- a/src/server/game/Spells/SpellEffects.cpp
 +++ b/src/server/game/Spells/SpellEffects.cpp
-@@ -425,6 +425,22 @@ void Spell::SpellDamageSchoolDmg(SpellEffIndex effIndex)
-                         damage = unitTarget->CountPctFromMaxHealth(50);
-                         break;
-                     }
-+					// Bone Storm
-+                    case 69075:
-+                    case 70834:
-+                    case 70835:
-+                    case 70836:
-+                    {
-+                        float distance = m_caster->GetDistance(unitTarget);
-+                        float radius = 12.0f;
-+                        if(distance > radius)
-+                            return;
-+                        if(distance < 1)
-+                           distance = 1;
-+                        int32 bp0 = m_spellInfo->EffectBasePoints[0];
-+                        int32 damage = int32(bp0 / (distance / radius));
-+                        break;
-+                    }
-                     // Tympanic Tantrum
-                     case 62775:
-                     {
 @@ -4366,6 +4382,74 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                      }
                      return;
