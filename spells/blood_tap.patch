@@ -112,13 +112,13 @@ diff -r b4f28c6c0916 -r 0b1ef27c201b src/server/game/Spells/SpellEffects.cpp
 diff -r b4f28c6c0916 -r 0b1ef27c201b src/server/game/Spells/SpellMgr.cpp
 --- a/src/server/game/Spells/SpellMgr.cpp	Mon Sep 20 10:19:20 2010 +0200
 +++ b/src/server/game/Spells/SpellMgr.cpp	Mon Sep 20 07:30:48 2010 -0300
-@@ -3306,6 +3306,9 @@
-             spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_TARGET_ANY;
-             spellInfo->Effect[1] = 0;
-             break;
-+        case 45529: // Blood Tap
-+            spellInfo->EffectMiscValue[0] = 0;
-+            break;
-         default:
-             break;
+@@ -3313,6 +3313,9 @@
+                 spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_TARGET_ANY;
+                 spellInfo->Effect[1] = 0;
+                 break;
++            case 45529: // Blood Tap
++                spellInfo->EffectMiscValue[0] = 0;
++                break;
+             default:
+                 break;
          }
