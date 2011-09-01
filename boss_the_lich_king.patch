@@ -1,3 +1,31 @@
+--- a/src/server/game/Entities/Object/Object.cpp	2011-09-01 08:35:48.000000000 +0000
++++ b/src/server/game/Entities/Object/Object.cpp	2011-09-01 11:07:12.000000000 +0000
+@@ -2405,6 +2405,15 @@
+     return go;
+ }
+ 
++Player* WorldObject::FindNearestPlayer(float range, bool alive)
++{
++  Player* player = NULL;
++  Trinity::AnyPlayerInObjectRangeCheck check(this, GetVisibilityRange());
++  Trinity::PlayerSearcher<Trinity::AnyPlayerInObjectRangeCheck> searcher(this, player, check);
++  VisitNearbyWorldObject(range, searcher);
++  return player;
++}
++
+ void WorldObject::GetGameObjectListWithEntryInGrid(std::list<GameObject*>& lList, uint32 uiEntry, float fMaxSearchRange) const
+ {
+     CellPair pair(Trinity::ComputeCellPair(this->GetPositionX(), this->GetPositionY()));
+--- a/src/server/game/Entities/Object/Object.h	2011-09-01 08:35:48.000000000 +0000
++++ b/src/server/game/Entities/Object/Object.h	2011-09-01 11:07:52.000000000 +0000
+@@ -788,6 +788,7 @@
+ 
+         Creature*   FindNearestCreature(uint32 entry, float range, bool alive = true) const;
+         GameObject* FindNearestGameObject(uint32 entry, float range) const;
++        Player*     FindNearestPlayer(float range, bool alive = true);
+ 
+         void GetGameObjectListWithEntryInGrid(std::list<GameObject*>& lList, uint32 uiEntry, float fMaxSearchRange) const;
+         void GetCreatureListWithEntryInGrid(std::list<Creature*>& lList, uint32 uiEntry, float fMaxSearchRange) const;
 diff --git a/src/server/game/Scripting/ScriptLoader.cpp b/src/server/game/Scripting/ScriptLoader.cpp
 index a86ade0..00b61ef 100755
 --- a/src/server/game/Scripting/ScriptLoader.cpp
