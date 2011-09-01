@@ -36,20 +36,18 @@ index d8d8f36..5e3d45a 100755
                          case 46584: // Raise Dead
                          {
                              if (WorldObject* result = FindCorpseUsing<Trinity::RaiseDeadObjectCheck> ())
-diff --git a/src/server/scripts/Northrend/CMakeLists.txt b/src/server/scripts/Northrend/CMakeLists.txt
-index 2798e14..1ce8f3e 100644
---- a/src/server/scripts/Northrend/CMakeLists.txt
-+++ b/src/server/scripts/Northrend/CMakeLists.txt
-@@ -170,6 +170,7 @@ set(scripts_STAT_SRCS
+--- a/src/server/scripts/Northrend/CMakeLists.txt	2011-09-01 08:35:48.000000000 +0000
++++ b/src/server/scripts/Northrend/CMakeLists.txt	2011-09-01 10:39:16.000000000 +0000
+@@ -173,6 +173,7 @@
    Northrend/IcecrownCitadel/boss_blood_queen_lana_thel.cpp
    Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
    Northrend/IcecrownCitadel/boss_sindragosa.cpp
-+   Northrend/IcecrownCitadel/boss_the_lich_king.cpp
-   Northrend/RubySanctum/boss_baltharus.cpp
-   Northrend/RubySanctum/boss_halion.cpp
-   Northrend/RubySanctum/boss_ragefire.cpp
---- /www/rev_1_9_2011_2/TrinityCore/src/server/game/Spells/SpellMgr.cpp	2011-09-01 08:35:48.000000000 +0000
-+++ /www/rev_24_8_2011_2/TrinityCore/src/server/game/Spells/SpellMgr.cpp	2011-08-31 08:16:07.000000000 +0000
++  Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+   Northrend/zuldrak.cpp
+   Northrend/icecrown.cpp
+   Northrend/Gundrak/boss_slad_ran.cpp
+--- a/src/server/game/Spells/SpellMgr.cpp	2011-09-01 08:35:48.000000000 +0000
++++ b/src/server/game/Spells/SpellMgr.cpp	2011-08-31 08:16:07.000000000 +0000
 @@ -3313,6 +3312,62 @@
                  spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_TARGET_ANY;
                  spellInfo->Effect[1] = 0;
@@ -3740,13 +3738,6 @@ index 2798e14..1ce8f3e 100644
      // Lord Marrowgar
      CRITERIA_BONED_10N                  = 12775,
      CRITERIA_BONED_25N                  = 12962,
-@@ -372,6 +430,7 @@
-     // Sindragosa
-     ACTION_START_FROSTWYRM      = -368530,
-     ACTION_TRIGGER_ASPHYXIATION = -368531,
- };
- 
- enum WeekliesICC
 @@ -448,4 +507,6 @@
      return NULL;
  }
