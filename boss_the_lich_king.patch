@@ -3794,8 +3794,8 @@ index d8d8f36..5e3d45a 100755
              return true;
          }
  };
---- /www/rev_1_9_2011_2/TrinityCore/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp	2011-09-01 08:35:48.000000000 +0000
-+++ /www/rev_24_8_2011_2/TrinityCore/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp	2011-08-24 08:01:42.000000000 +0000
+--- a/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp	2011-09-01 08:35:48.000000000 +0000
++++ b/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp	2011-08-24 08:01:42.000000000 +0000
 @@ -115,7 +115,22 @@
                  SindragosaGUID = 0;
                  SpinestalkerGUID = 0;
