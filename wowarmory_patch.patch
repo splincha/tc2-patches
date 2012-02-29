@@ -177,10 +177,11 @@ diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/U
 index de68aef..96960f0 100755
 --- a/src/server/game/Entities/Unit/Unit.cpp
 +++ b/src/server/game/Entities/Unit/Unit.cpp
-@@ -15527,7 +15539,10 @@
+@@ -15526,8 +15538,11 @@
+             {
                  if (instanceMap->IsRaidOrHeroicDungeon())
                  {
-                     if (creature->GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_INSTANCE_BIND)
+                    if (creature->GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_INSTANCE_BIND)
 +                    {
                          ((InstanceMap*)instanceMap)->PermBindAllPlayers(creditedPlayer);
 +                        creditedPlayer->CreateWowarmoryFeed(3, creature->GetCreatureInfo()->Entry, 0, 0);
