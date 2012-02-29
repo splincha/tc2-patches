@@ -1039,7 +1039,7 @@ index 143c1cc..04eee55 100755
  #include "SmartAI.h"
  #include "Channel.h"
 +#include "AnticheatMgr.h"
- 
+45454 
  volatile bool World::m_stopEvent = false;
  uint8 World::m_ExitCode = SHUTDOWN_EXIT_CODE;
 @@ -1184,6 +1185,11 @@ void World::LoadConfigSettings(bool reload)
