@@ -975,10 +975,10 @@ index 0119d65..d6824a7 100755
      AddSC_account_commandscript();
      AddSC_achievement_commandscript();
      AddSC_debug_commandscript();
-diff --git a/src/server/game/Server/Protocol/Handlers/MovementHandler.cpp b/src/server/game/Server/Protocol/Handlers/MovementHandler.cpp
+diff --git a/src/server/game/Handlers/MovementHandler.cpp b/src/server/game/Handlers/MovementHandler.cpp
 index 30b1dc7..2b1afdb 100755
---- a/src/server/game/Server/Protocol/Handlers/MovementHandler.cpp
-+++ b/src/server/game/Server/Protocol/Handlers/MovementHandler.cpp
+--- a/src/server/game/Handlers/MovementHandler.cpp
++++ b/src/server/game/Handlers/MovementHandler.cpp
 @@ -16,6 +16,7 @@
   * with this program. If not, see <http://www.gnu.org/licenses/>.
   */
