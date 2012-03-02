@@ -1,5 +1,5 @@
---- a/src/server/game/Server/Protocol/Handlers/DuelHandler.cpp	2011-07-20 04:59:50.000000000 +0000
-+++ b/src/server/game/Server/Protocol/Handlers/DuelHandler.cpp	2011-07-20 05:33:58.000000000 +0000
+--- a/src/server/game/Handlers/DuelHandler.cpp	2011-07-20 04:59:50.000000000 +0000
++++ b/src/server/game/Handlers/DuelHandler.cpp	2011-07-20 05:33:58.000000000 +0000
 @@ -51,6 +51,14 @@
  
      pl->SendDuelCountdown(3000);
