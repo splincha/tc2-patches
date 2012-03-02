@@ -184,7 +184,7 @@ index de68aef..96960f0 100755
                     if (creature->GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_INSTANCE_BIND)
 +                    {
                          ((InstanceMap*)instanceMap)->PermBindAllPlayers(creditedPlayer);
-+                        creditedPlayer->CreateWowarmoryFeed(3, creature->GetCreatureInfo()->Entry, 0, 0);
++                        creditedPlayer->CreateWowarmoryFeed(3, creature->GetCreatureTemplate()->Entry, 0, 0);
 +                    }
                  }
                  else
